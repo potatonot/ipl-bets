@@ -159,7 +159,6 @@ const AuthPage = () => {
 
           {mode === 'register' && (
             <p style={{ fontSize: '11px', color: 'var(--text-3)', marginTop: '16px', textAlign: 'center', lineHeight: 1.5 }}>
-              Starting balance: <span style={{ color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>₹1,000</span>
             </p>
           )}
         </div>

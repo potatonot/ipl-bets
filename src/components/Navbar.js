@@ -12,11 +12,6 @@ const Navbar = () => {
     navigate('/auth');
   };
 
-  const formatBalance = (n) => {
-    if (n === undefined || n === null) return '—';
-    return `₹${Number(n).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-  };
-
   return (
     <nav className="navbar">
       <div className="navbar-inner">
@@ -39,8 +34,20 @@ const Navbar = () => {
 
         <div className="nav-right">
           {profile && (
-            <div className="nav-balance">
-              <span>{formatBalance(profile.balance)}</span>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '4px 12px',
+              background: 'var(--bg-3)',
+              border: '1px solid var(--border)',
+              borderRadius: '8px',
+              fontSize: '13px',
+              color: 'var(--text-2)',
+              fontFamily: 'var(--font-mono)',
+            }}>
+              <span style={{ color: 'var(--accent)', fontSize: '11px' }}>@</span>
+              {profile.username}
             </div>
           )}
           <button className="btn btn-ghost btn-sm" onClick={handleSignOut}>
