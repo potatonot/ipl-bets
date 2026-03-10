@@ -18,44 +18,67 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     let settled = false;
 
-    const finish = (sessionUser) => {
+    const finish = async (sessionUser) => {
       if (settled) return;
       settled = true;
       setUser(sessionUser ?? null);
       if (sessionUser) {
-        loadProfile(sessionUser.id).finally(() => setLoading(false));
-      } else {
-        setLoading(false);
+        await loadProfile(sessionUser.id);
       }
+      setLoading(false);
     };
 
-    // Hard timeout — if getSession takes more than 3s, just proceed as logged out
+    // 1. First try reading from localStorage directly — zero network, instant
+    const storageKey = 'ipl-bets-auth';
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const sessionUser = parsed?.user ?? parsed?.session?.user ?? null;
+        const expiresAt = parsed?.expires_at ?? parsed?.session?.expires_at ?? 0;
+        const isExpired = expiresAt && (expiresAt * 1000) < Date.now();
+
+        if (sessionUser && !isExpired) {
+          // Valid session in localStorage — use it immediately, skip network
+          finish(sessionUser);
+          // Still refresh token in background silently
+          supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session?.user && !settled) finish(session.user);
+          }).catch(() => {});
+          return;
+        }
+      }
+    } catch (e) {}
+
+    // 2. No local session found — do a real getSession with timeout
     const timeout = setTimeout(() => {
       console.warn('Session restore timed out');
       finish(null);
-    }, 3000);
+    }, 4000);
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       clearTimeout(timeout);
-      finish(session?.user);
+      finish(session?.user ?? null);
     }).catch(() => {
       clearTimeout(timeout);
       finish(null);
     });
 
+    // 3. Listen for auth changes (sign in / sign out / token refresh)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        // TOKEN_REFRESHED or SIGNED_IN after initial load
         if (event === 'SIGNED_OUT') {
           setUser(null);
           setProfile(null);
           setLoading(false);
           return;
         }
-        if (session?.user) {
-          setUser(session.user);
-          await loadProfile(session.user.id);
-          setLoading(false);
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          if (session?.user) {
+            setUser(session.user);
+            await loadProfile(session.user.id);
+            setLoading(false);
+          }
         }
       }
     );
