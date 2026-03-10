@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/ipl-bets/static/css/main.83c474ac.css",
-    "main.js": "/ipl-bets/static/js/main.51c78999.js",
+    "main.js": "/ipl-bets/static/js/main.1ba5bb4b.js",
     "index.html": "/ipl-bets/index.html",
     "main.83c474ac.css.map": "/ipl-bets/static/css/main.83c474ac.css.map",
-    "main.51c78999.js.map": "/ipl-bets/static/js/main.51c78999.js.map"
+    "main.1ba5bb4b.js.map": "/ipl-bets/static/js/main.1ba5bb4b.js.map"
   },
   "entrypoints": [
     "static/css/main.83c474ac.css",
-    "static/js/main.51c78999.js"
+    "static/js/main.1ba5bb4b.js"
   ]
 }
