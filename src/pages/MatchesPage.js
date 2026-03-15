@@ -130,7 +130,7 @@ const MatchesPage = () => {
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', paddingBottom: '24px', borderBottom: '1px solid var(--border)' }}>
           <div>
             <h1>IPL 2026</h1>
-            <p>84 matches · 10 teams · 28 Mar – 31 May</p>
+            <p>20 matches confirmed · more TBA · 28 Mar – 12 Apr</p>
           </div>
           <div style={{ fontSize: '12px', color: 'var(--text-3)', fontFamily: 'var(--font-mono)' }}>
             {counts.upcoming} upcoming
