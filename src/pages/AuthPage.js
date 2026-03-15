@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { signIn, signUp } from '../lib/supabase';
 
+// Change this to whatever secret code you want your group to use
+const INVITE_CODE = 'ipl2026';
+
 const AuthPage = () => {
-  const [mode, setMode] = useState('login'); // 'login' | 'register'
-  const [form, setForm] = useState({ email: '', password: '', username: '', displayName: '' });
+  const [mode, setMode] = useState('login');
+  const [form, setForm] = useState({ email: '', password: '', username: '', displayName: '', inviteCode: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
@@ -20,6 +23,12 @@ const AuthPage = () => {
       const { error } = await signIn(form.email, form.password);
       if (error) setError(error.message);
     } else {
+      // Check invite code first
+      if (form.inviteCode.trim().toLowerCase() !== INVITE_CODE.toLowerCase()) {
+        setError('Invalid invite code. Ask the group admin for access.');
+        setLoading(false);
+        return;
+      }
       if (!form.username.match(/^[a-z0-9_]{3,20}$/i)) {
         setError('Username must be 3–20 chars, letters/numbers/underscore only');
         setLoading(false);
@@ -27,7 +36,7 @@ const AuthPage = () => {
       }
       const { error } = await signUp(form.email, form.password, form.username, form.displayName || form.username);
       if (error) setError(error.message);
-      else setSuccess('Account created! Check your email to confirm, then sign in.');
+      else setSuccess('Account created! You can now sign in.');
     }
 
     setLoading(false);
@@ -42,7 +51,6 @@ const AuthPage = () => {
       padding: '20px',
     }}>
       <div style={{ width: '100%', maxWidth: '360px' }}>
-        {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <div style={{
             fontFamily: 'var(--font-mono)',
@@ -58,9 +66,7 @@ const AuthPage = () => {
           </div>
         </div>
 
-        {/* Card */}
         <div className="card" style={{ padding: '28px' }}>
-          {/* Tabs */}
           <div style={{
             display: 'flex',
             gap: '4px',
@@ -144,6 +150,19 @@ const AuthPage = () => {
               />
             </div>
 
+            {mode === 'register' && (
+              <div className="form-group">
+                <label className="form-label">Invite Code</label>
+                <input
+                  className="form-input"
+                  placeholder="Ask your group admin"
+                  value={form.inviteCode}
+                  onChange={set('inviteCode')}
+                  required
+                />
+              </div>
+            )}
+
             {error && <div className="alert alert-error">{error}</div>}
             {success && <div className="alert alert-success">{success}</div>}
 
@@ -153,14 +172,12 @@ const AuthPage = () => {
               style={{ marginTop: '4px', padding: '11px' }}
               disabled={loading}
             >
-              {loading ? <><span className="spinner" style={{ borderTopColor: 'var(--bg)' }} /> Loading...</> : (mode === 'login' ? 'Sign in' : 'Create account')}
+              {loading
+                ? <><span className="spinner" style={{ borderTopColor: 'var(--bg)' }} /> Loading...</>
+                : (mode === 'login' ? 'Sign in' : 'Create account')
+              }
             </button>
           </form>
-
-          {mode === 'register' && (
-            <p style={{ fontSize: '11px', color: 'var(--text-3)', marginTop: '16px', textAlign: 'center', lineHeight: 1.5 }}>
-            </p>
-          )}
         </div>
       </div>
     </div>
