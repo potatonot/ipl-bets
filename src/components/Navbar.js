@@ -3,8 +3,11 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { signOut } from '../lib/supabase';
 
+const ADMIN_EMAIL = 'faddistpej.gg@gmail.com';
+
 const Navbar = () => {
-  const { profile } = useAuth();
+  const { user, profile } = useAuth();
+  const isAdmin = user?.email === ADMIN_EMAIL;
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -27,9 +30,11 @@ const Navbar = () => {
           <NavLink to="/profile" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
             My Profile
           </NavLink>
-          <NavLink to="/admin" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
-            Admin
-          </NavLink>
+          {isAdmin && (
+            <NavLink to="/admin" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
+              Admin
+            </NavLink>
+          )}
         </div>
 
         <div className="nav-right">

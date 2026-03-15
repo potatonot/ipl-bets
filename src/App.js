@@ -10,6 +10,8 @@ import LeaderboardPage from './pages/LeaderboardPage';
 import AdminPage from './pages/AdminPage';
 import { startKeepAlive, stopKeepAlive } from './lib/supabase';
 
+const ADMIN_EMAIL = 'faddistpej.gg@gmail.com';
+
 const SessionLoader = () => (
   <div style={{
     minHeight: '100vh',
@@ -67,7 +69,11 @@ const AppInner = () => {
         <Route path="/matches/:id" element={<ProtectedRoute><MatchDetailPage /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path="/leaderboard" element={<ProtectedRoute><LeaderboardPage /></ProtectedRoute>} />
-        <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
+        <Route path="/admin" element={
+          <ProtectedRoute>
+            {user?.email === ADMIN_EMAIL ? <AdminPage /> : <Navigate to="/matches" replace />}
+          </ProtectedRoute>
+        } />
         <Route path="*" element={<Navigate to={user ? "/matches" : "/auth"} replace />} />
       </Routes>
     </div>
