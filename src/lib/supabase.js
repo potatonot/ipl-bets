@@ -193,8 +193,9 @@ export const settleMatch = async (matchId, winnerId, team1Score, team2Score) => 
 
   if (bets.length === 0) return { error: null };
 
-  const winnerBets = bets.filter((b) => b.team_id === winnerId);
-  const loserBets  = bets.filter((b) => b.team_id !== winnerId);
+  // Force parseInt on both sides — Supabase can return team_id as string
+  const winnerBets = bets.filter((b) => parseInt(b.team_id) === parseInt(winnerId));
+  const loserBets  = bets.filter((b) => parseInt(b.team_id) !== parseInt(winnerId));
 
   const loserCount = loserBets.length;
 
